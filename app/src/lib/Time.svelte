@@ -1,30 +1,53 @@
 <script lang="ts">
+    import { onMount } from "svelte";
 
-  const dayTimeDiff = (
-    oldTime: number,
-    newTime: number,
+  const getSeconds = (
+    time: number,
   ): number => {
-    let diff = newTime - oldTime;
-    return diff;
+    return Math.floor(time / 1000 % 60);
+  }
+
+  const getMinutes = (
+    time: number,
+  ): number => {
+    return Math.floor(time / 1000 / 60) % 60
+  }
+
+  const getHours = (
+    time: number,
+  ): number => {
+    return Math.floor(time / 1000 / 60 / 60) % 24
+  }
+
+  const getDays = (
+    time: number,
+  ): number => {
+    return Math.floor(time / 1000 / 60 / 60 / 24)
   }
 
   const startDateTime = new Date('2024-06-01T13:04:47.000')
-  const currentTime = Date.now();
+  let currentTime = $state(Date.now());
 
-  const timeElapsed = $state(
-    dayTimeDiff(
-      startDateTime.getTime(),
-      currentTime,
-    ),
+  const timeElapsed = $derived(
+     currentTime - startDateTime.getTime(),
   );
 
-  let ms = $state(timeElapsed % 1000);
-  let ss = $state(Math.floor(timeElapsed / 1000 % 60));
-  let mm = $state(Math.floor(timeElapsed / 1000 / 60) % 60);
-  let hh = $state(Math.floor(timeElapsed / 1000 / 60 / 60) % 24);
-  let dd = $state(Math.floor(timeElapsed / 1000 / 60 / 60 / 24));
+  let ss = $derived(getSeconds(timeElapsed));
+  let mm = $derived(getMinutes(timeElapsed));
+  let hh = $derived(getHours(timeElapsed));
+  let dd = $derived(getDays(timeElapsed));
+
+	onMount(() => {
+		const interval = setInterval(() => {
+			currentTime = Date.now();
+		}, 1000);
+
+		return () => {
+			clearInterval(interval);
+		};
+	});
 </script>
 
 <div>
-   {dd} dní, {hh} hodin (± 1), {mm} minut, {ss} sekund a {ms} milisekund
+   {dd} dní, {hh} hodin (± 1), {mm} minut a {ss} sekund
 </div>
