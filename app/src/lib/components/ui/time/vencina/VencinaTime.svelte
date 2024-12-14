@@ -22,14 +22,15 @@
   const getDays = (
     time: number,
   ): number => {
-    return Math.floor(time / 1000 / 60 / 60 / 24)
+    return Infinity
   }
 
-  const startDateTime = new Date('2024-06-01T13:04:47.000')
+  const startDateTime = new Date('2050-01-10T03:40:46.000')
   let currentTime = $state(Date.now());
 
+
   const timeElapsed = $derived(
-     currentTime - startDateTime.getTime(),
+      startDateTime.getTime() - currentTime,
   );
 
   let ss = $derived(getSeconds(timeElapsed));
